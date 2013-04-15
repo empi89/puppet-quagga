@@ -1,26 +1,21 @@
-! file <%= scope.lookupvar('quagga::params::quagga_bgpd_conf') %>
+! file <%= scope.lookupvar('quagga::bgpd_conf') %>
 ! managed by puppet
 !
-log syslog
+log file <%= scope.lookupvar('quagga::bgpd::logfile') %>
+hostname <%= scope.lookupvar('quagga::bgpd::hostname') %>
+password <%= scope.lookupvar('quagga::bgpd::password') %>
 !
-router bgp <%= asnumber %>
- bgp router-id <%= bgpip %>
- bgp graceful-restart
- aggregate-address <%= bgpaddress -%> summary-only
- redistribute connected
- neighbor <%= routerip -%> remote-as <%= asnumber %>
- neighbor <%= routerip -%> route-map filter-in in
- neighbor <%= routerip -%> route-map filter-out out
-!
-ip prefix-list export-prefixes seq 10 permit <%= bgpaddress %>
-!
-route-map filter-in deny 10
-!
-route-map filter-out permit 10
- match ip address prefix-list export-prefixes
- set metric 0
-!
-route-map filter-out deny 30
+<% scope.lookupvar('quagga::bgpd::bgp_config').sort_by { |asn,asn_conf| asn }.each do | asn, asn_conf | -%>
+router bgp <%= asn %>
+ bgp router-id <%= asn_conf['rouder-id'] %>
+<% asn_conf['neighbors'].sort_by { |neighbor,neighbor_conf| neighbor }.each do | neighbor, neighbor_conf | -%>
+  neighbor <%= neighbor %> remote-as <%= neighbor_conf['remote-as'] %>
+  neighbor <%= neighbor %> update-source <%= neighbor_conf['update-source'] %>
+<% if neighbor_conf['next-hop-self'] -%>
+  neighbor <%= neighbor %> next-hop-self
+<% end -%>
+<% end -%>
+<% end -%>
 !
 line vty
 !

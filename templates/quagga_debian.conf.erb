@@ -6,7 +6,7 @@
 # the config via "vtysh -b" when the servers are started. 
 # Check /etc/pam.d/quagga if you intend to use "vtysh"!
 #
-vtysh_enable=yes
+vtysh_enable=<%= scope.lookupvar('quagga::vtysh') %>
 zebra_options=" --daemon -A 127.0.0.1"
 bgpd_options="  --daemon -A 127.0.0.1"
 ospfd_options=" --daemon -A 127.0.0.1"
