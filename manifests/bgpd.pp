@@ -20,6 +20,7 @@ class quagga::bgpd (
         group   => $quagga::bgpd::group,
         mode    => '0640',
         notify  => Service['quagga'],
+        require => Package['quagga'],
         replace => false,
     }
     

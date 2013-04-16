@@ -55,13 +55,15 @@ class quagga (
     ensure    => running,
     name      => $quagga::quagga_name,
     enable    => true,
-    subscribe   => Package['quagga'],
+    subscribe => Package['quagga'],
+    hasstatus => false
   }
 
   concat{$quagga::daemons_conf:
     owner => $quagga::owner,
     group => $quagga::group,
     mode  => '0644',
+    require => Package['quagga'],
   }
    
   concat::fragment{'header':
@@ -77,6 +79,7 @@ class quagga (
       owner   => $quagga::owner,
       group   => $quagga::group,
       mode  => '0640',
+      require => Package['quagga'],
     }
     concat::fragment{'zebra':
       target  => $quagga::daemons_conf,
@@ -92,6 +95,7 @@ class quagga (
       owner   => $quagga::owner,
       group   => $quagga::group,
       mode  => '0660',
+      require => Package['quagga'],
     }
   }
   
@@ -102,6 +106,7 @@ class quagga (
       owner   => $quagga::owner,
       group   => $quagga::group,
       mode  => '0644',
+      require => Package['quagga'],
     }
   }
 }
